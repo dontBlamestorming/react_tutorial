@@ -4,15 +4,19 @@ import TOC from './components/TOC';
 import Content from './components/Content';
 import './App.css';
 
-
-
 class App extends Component {   
   constructor(props) {    
-    super(props);
+  super(props);
     this.state = {
       subject : {
         title : 'WEB',
-        subTitle : "World Wide Web"}
+        subTitle : "World Wide Web"
+      },
+      contents : [
+        {id : 1, title : 'HTML', desc : 'HTML is for Information'},
+        {id : 2, title : 'CSS', desc : 'CSS is for design'},
+        {id : 3, title : 'Jacascript', desc : 'Javascript for Interactive'}
+      ]
     }
   }
 
@@ -23,7 +27,8 @@ class App extends Component {
           title = {this.state.subject.title}
           subTitle = {this.state.subject.subTitle}> 
         </Subject>
-        <TOC></TOC>
+
+        <TOC data = {this.state.contents}></TOC>   
         <Content title="HTML" desc="HTML is HyperText MarkUp Language."></Content>
       </div>
     );
@@ -52,5 +57,13 @@ constructor(props) {
   }
 1. 어떤 컴포넌트가 실행될 때 render함수보다 먼저 실행되면서 그 컴포넌트를 초기화시키는 함수
 2. 초기화가 끝나면 this.state = 
-3. 즉, 상위 컴포넌트인 App의 상태를 하위 컴포넌트로 전달하고 싶을 때는 상위 컴포넌트에 state로서 만들고 하위 컴포넌트에 props값으로 전달 할 수 있다. 
+3. 즉, 상위 컴포넌트인 App의 상태를 하위 컴포넌트(subject, TOC, content)로 전달하고 싶을 때는 상위 컴포넌트에 state로서 만들고 하위 컴포넌트에 props값으로 전달 할 수 있다.
+
+Key
+1. <TOC data = {this.state.contents}></TOC> - 하위 컴포넌트에 상위 컴포넌트에서 생성자로서 만든 state값을 넣어주고 있다. 
+2. 자동으로 list를 생성하는 기능을 넣으면 이런 에러가 난다.
+Warning: Each child in a list should have a unique "key" prop.
+즉, 각각의 key라고 하는 prop을 가져야 한다는 뜻. 이것은 react가 내부적으로 list를 구분짓기 위해서 요청하는 것.
+
+정리 - state와 porps의 관계. 부모 App의 입장에서는 state라고 하는 내부정보를 사용하고 자식에게 전달할 때는 props를 통해 전달하고 있다. 즉, App입장에서는 TOC가 어떻게 동작하는지 알 필요가 없다. 그냥 data라고 하는 props로는 어떤 형태의 데이터를 전달하면 되는가?, 사용자의 입장에서 알아야 할 것만 알면 된다.  
 */
