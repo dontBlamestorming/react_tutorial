@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(
+ReactDOM.render(      // App.js을 읽어서 App이라는 Class를 실행하고 있다. 
   <React.StrictMode>
     <App />
   </React.StrictMode>,
