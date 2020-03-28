@@ -1,41 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
+import Subject from './components/Subject';
+import TOC from './components/TOC';
+import Content from './components/Content';
 
-class Subject extends Component {
-  render() {
-    return (
-      <header>
-        <h1>{this.props.title}</h1>
-        {this.props.subTitle}
-      </header>
-    );
-  }
-}
-
-class TOC extends Component {     // Table Of Content
-  render() {
-    return (
-      <nav>
-        <ul>
-            <li><a href="1.html">HTML</a></li>
-            <li><a href="2.css">CSS</a></li>
-            <li><a href="3.Javascript">Javascript</a></li>
-        </ul>
-      </nav>
-    );
-  }
-}
-
-class Content extends Component {
-  render() {
-    return (
-      <article>
-        <h2>{this.props.title}</h2>
-        {this.props.desc}
-      </article>
-    );
-  }
-}
 
 class App extends Component {   
   render() {
