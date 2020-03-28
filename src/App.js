@@ -8,10 +8,9 @@ class App extends Component {
   constructor(props) {    
   super(props);
     this.state = {
-      subject : {
-        title : 'WEB',
-        subTitle : "World Wide Web"
-      },
+      mode : 'welcome',      // welcome or read 
+      subject : {title : 'WEB', subTitle : "World Wide Web"},
+      welcome : {title : 'Welcome', desc : 'Hello, React!!'},
       contents : [
         {id : 1, title : 'HTML', desc : 'HTML is for Information'},
         {id : 2, title : 'CSS', desc : 'CSS is for design'},
@@ -21,6 +20,15 @@ class App extends Component {
   }
 
   render() {
+    console.log('i am App rendering...')
+    var _title, _desc = null;
+    if(this.state.mode === 'welcome') {
+      _title = this.state.welcome.title;
+      _desc = this.state.welcome.desc;
+    } else if (this.state.mode === 'read') {
+      _title = this.state.contents[0].title;
+      _desc = this.state.contents[0].desc;
+    }
     return (
       <div className="App">
         <Subject
@@ -29,7 +37,7 @@ class App extends Component {
         </Subject>
 
         <TOC data = {this.state.contents}></TOC>   
-        <Content title="HTML" desc="HTML is HyperText MarkUp Language."></Content>
+        <Content title={_title} desc={_desc}></Content>
       </div>
     );
   }
@@ -66,4 +74,10 @@ Warning: Each child in a list should have a unique "key" prop.
 즉, 각각의 key라고 하는 prop을 가져야 한다는 뜻. 이것은 react가 내부적으로 list를 구분짓기 위해서 요청하는 것.
 
 정리 - state와 porps의 관계. 부모 App의 입장에서는 state라고 하는 내부정보를 사용하고 자식에게 전달할 때는 props를 통해 전달하고 있다. 즉, App입장에서는 TOC가 어떻게 동작하는지 알 필요가 없다. 그냥 data라고 하는 props로는 어떤 형태의 데이터를 전달하면 되는가?, 사용자의 입장에서 알아야 할 것만 알면 된다.  
+
+event, state, props and function render
+목표 = 각각의 링크를 클릭 -> App 컴포넌트의 state가 바뀜 -> 해당 값이 Content의 props값으로 전달 -> 동적인 어플리케이션
+react에서 props나 state의 값이 바뀌면 state를 갖고 있는 컴포넌트의 render함수가 다시 호출된다. 그 하위에 있는 컴포넌트들의 render도 다시 호출된다. 어떤 html을 render할지 결정하는 것이 render()이기 때문이다. 즉, props나 state가 바뀌면 화면이 다시 그려진다. 당연히 순서는 상위 컴포넌트 -> 하위이다.
+
+자, 그렇다면 javascript를 이용하여 'Click'이라는 이벤트가 발생했을 때, state값의 mode가 바뀌면 될 것 같다. 
 */
