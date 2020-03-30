@@ -44,14 +44,23 @@ class App extends Component {
       _article = <CreateContent onSubmit={function(_title, _desc) {
         // add content to this.state.contents
         this.maxContentId = this.maxContentId + 1;
+
         // this.state.contents.push({
         //   id : this.maxContentId, title : _title, desc : _desc
         // });
-        var _content = this.state.contents.concat({
+
+        // var _content = this.state.contents.concat({
+        //   id : this.maxContentId, title : _title, desc : _desc
+        // })
+
+        var newContents = Array.from(this.state.contents);
+        // newContents !== this.state.contents
+        newContents.push({
           id : this.maxContentId, title : _title, desc : _desc
         })
+
         this.setState({
-          contents : _content
+          contents : newContents
         })
       }.bind(this)}></CreateContent>
     }
@@ -182,5 +191,17 @@ state에다가 값을 추가할 때에는 원본을 수정하지 말고 복사�
  -console.log(this.props.data, 'B');
 B에서는 render()가 호출되지 못하였기 때문에 state.content[] 값을 그대로 갖고온다. 하지만 newProps는 추가된 값까지 가져오는 것을 볼 수 있다. 즉, 전자는 배열값을 가져오지만 후자는 변경값을 갖고온다. 
 
-만약 쓸데없는 redering을 막기위해 shouldComponentUpdate를 사용했고, 원본값과 변경값을 비교하여 변경값이 있을 때만 TOC가 render된다는 조건을 추가했다고 치자. 이 때, state.contents[]를 push로서 값을 추가했다면 TOC에서 this.props.data를 했을 때 원본 배열에 값을 추가하였기 때문에 shouldComponentUpdate함수 내에 if문으로 조건을 붙일 수 없다. 그러나 concat()을 사용한다면 원본값은 두고 그 원본값을 복제하여 변경값을 추가한다음 render()하기 때문에 원본값과 변경값을 비교할 수 있는 환경을 만들 수 있다. 따라서 
+만약 쓸데없는 redering을 막기위해 shouldComponentUpdate를 사용했고, 원본값과 변경값을 비교하여 변경값이 있을 때만 TOC가 render된다는 조건을 추가했다고 치자. 이 때, state.contents[]를 push로서 값을 추가했다면 TOC에서 this.props.data를 했을 때 원본 배열에 값을 추가하였기 때문에 shouldComponentUpdate함수 내에 if문으로 조건을 붙일 수 없다. 그러나 concat()을 사용한다면 원본값은 두고 그 원본값을 복제하여 변경값을 추가한다음 render()하기 때문에 원본값과 변경값을 비교할 수 있는 환경을 만들 수 있다. 
+공부할 것 -> newProps가 어떻게 post방식으로 submit된 값을 가져오는지?
+
+원본을 바꾸지 않는다 -> 불변성 -> immutable
+concat()을 사용하지 않고 같은 메커니즘을 이용할 수도 있다. concat()은 기존의 배열을 '복제'한다고 했는데 다른 코드를 통해 배열을 복제하면 되기 때문이다.
+var newContents = Array.from(this.state.contents)
+newContents.push({
+  id : this.maxContentId, title : _title, desc : _desc
+})
+객체를 복제해보자. 
+var a = {name : "dave"};
+var b = Object.assign({}, a);
+하지만 a !== b 이다.
 */
