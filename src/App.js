@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 import Subject from './components/Subject';
 import TOC from './components/TOC';
-import Content from './components/Content';
+import Control from './components/Control';
+import ReadContent from './components/ReadContent';
+import CreateContent from './components/CreateContent';
 import './App.css';
 
 class App extends Component {   
   constructor(props) {    
   super(props);
+    this.maxContentId = 3;
     this.state = {
-      mode : 'read',      // welcome or read 
+      mode : 'create',      // welcome or read 
       selectedContentId : 2,
       subject : {title : 'WEB', subTitle : "World Wide Web"},
       welcome : {title : 'Welcome', desc : 'Hello, React!!'},
@@ -21,7 +24,7 @@ class App extends Component {
   }
 
   render() {
-    var _title, _desc = null;
+    var _title, _desc, _article = null;
     if(this.state.mode === 'welcome') {
       _title = this.state.welcome.title;
       _desc = this.state.welcome.desc;
@@ -36,6 +39,22 @@ class App extends Component {
         }
         i = i + 1;
       }
+      _article = <ReadContent title={_title} desc={_desc}></ReadContent>
+    } else if(this.state.mode === 'create') {
+      _article = <CreateContent onSubmit={function(_title, _desc) {
+        // add content to this.state.contents
+        this.maxContentId = this.maxContentId + 1;
+        console.log(this.maxContentId);
+        // this.state.contents.push({
+        //   id : this.maxContentId, title : _title, desc : _desc
+        // });
+        var _content = this.state.contents.concat({
+          id : this.maxContentId, title : _title, desc : _desc
+        })
+        this.setState({
+          contents : _content
+        })
+      }.bind(this)}></CreateContent>
     }
     return (
       <div className="App">
@@ -56,8 +75,17 @@ class App extends Component {
             });
           }.bind(this)}
           data = {this.state.contents}>
-        </TOC>   
-        <Content title={_title} desc={_desc}></Content>
+        </TOC> 
+
+        <Control
+          onChangeMode={function(_mode) {
+            this.setState({
+              mode : _mode
+            });
+          }.bind(this)}>
+        </Control>
+        {_article}
+        
       </div>
     );
   }
@@ -124,6 +152,28 @@ render() 함수 안에서의 다른 함수는 this의 scope가 render() 함수�
 자동으로 생성되고있는 글목록에 내가 클릭한 목록의 본문이 표시되게 하는 방법. (속성을 이용하여)
 기본적으로 mode는 read이며 state에 selectedContentId라는 값을 하나 주자. 이 것은 나중에 하위 컴포넌트(TOC)에서 state값을 동적으로 변경하여 해당 값의 결과에 따라 Content가 결정되게 할 것이다. DB에서 테이블 두개를 바인딩 하는 작업과 비슷하다. state.content에도 id값이 있기 때문에 이 두개의 값을 기준으로 title와 contents가 결정되는 것이다. 즉, content[]에 있는 값을 반복문으로 돌리고 selectedContentId와 값이 같은 경우 결과를 표시하면 된다. 그렇다면 문제는 이제 특정한 글목록을 선택했을 때, selectedContentId를 어떻게 결정지어 줄 것인가다. 하위 컴포넌트는 상위 state의 값을 변경하여 rendering 시킬 수 있다. 위의 코드에서는 App의 함수를 TOC가 실행시킬 수 있다. TOC는 Click이라는 이벤트를 관리할 수 있는 코드를 갖고 있다. 따라서 '어떤' 목록을 클릭했는지는 이벤트 객체를 좀 더 살펴보자. 이벤트 객체는 target이라는 속성을 갖고있는데, 이것은 이 이벤트가 발생한 태그, 즉 a태그를 가리킨다. 그렇다면 data-id의 값에 접근할 수 있다는 것이다. 여기서 'data'는 target 속성 내부에 있는 dataset의 속성에 'id'를 준다는 뜻이다. 즉 이 id값을 onChangePage의 함수를 호출할 때 인자로 /App에 넘겨주면 이 값이 selectedContentId라는로서 state 값을 재정의 할 수 있게 되는 것이다. 
 
+props are read-only 
+Content 컴포넌트에서 이것을 사용하는 쪽(App)에서는 title이라는 props를 통해 값을 주입할 수 있다. 
+'<Content title={_title} desc={_desc}></Content>'
+하지만 Content에서 전달된 title의 값을 바꾸려고하면 error
+Content.js
+this.props.title = 'Something' - error
+
+without redux
+상위 컴포넌트가 하위 컴포넌트에 값을 전달할 때는, props를 통해 전달한다. 그렇다면 하위 컴포넌트가 상위 컴포넌트에 값을 전달할 때는 event를 통해 한다. 
+
+with redux
+데이터를 각각의 컴포넌트에 분산보관이 아니라 하나의 저장소(store)에 넣고 그 값이 바뀌면 그 데이터와 관련된 모든 컴포넌트가 자동으로 바뀌게 하는 것
+
+delete의 기능을 사용하고자 할때는 a태그를 쓰면 나중에 큰 문제가 발생할 수 있다. session이나 cookie같은 소프트웨어가 적용된 웹페이지는 사용자의 로그를 기록하는 것인데 이런 웹페이지에서는 delete의 적용 자체를 기록하기 때문에 다음에 의도치 않은 삭제기능이 일어날 수 있기 때문이다. input태그와 같은 단순 operation으로 처리하는 것이 바람직하다. 
+
+onSubmit - form태그에 설치하는 이벤트로서 하위 항목의 input태그의 submit이 일어나게 되면 해당 이벤트 객체의 함수가 자동으로 실행된다. 이것은 react의 기능이 아니라 html의 고유한 기능이다.
+
+maxContentId를 state값이 아닌 this에 따로 값을 준 이유는 이 코드는 데이터를 추가할 때 id를 비교하는 용도로만 사용될 것이고 이것 자체가 rendering될 필요는 없기 때문이다. 
+
+state에다가 값을 추가 
+1. push - 원본에 value 추가 - 비추천 
+2. concat - 원본이 아닌 새로운 변수에 value 추가
 
 
 */
