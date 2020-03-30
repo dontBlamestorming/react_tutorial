@@ -8,7 +8,6 @@ class TOC extends Component {     // Table Of Content
     return true;
   }
   render() {
-    console.log("i am TOC component")
     var lists = [];
     var data = this.props.data;
     var i = 0;

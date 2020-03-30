@@ -4,6 +4,7 @@ import TOC from './components/TOC';
 import Control from './components/Control';
 import ReadContent from './components/ReadContent';
 import CreateContent from './components/CreateContent';
+import UpdateContent from './components/UpdateContent';
 import './App.css';
 
 class App extends Component {   
@@ -23,47 +24,61 @@ class App extends Component {
     }
   }
 
-  render() {
-    var _title, _desc, _article = null;
-    if(this.state.mode === 'welcome') {
-      _title = this.state.welcome.title;
-      _desc = this.state.welcome.desc;
-    } else if (this.state.mode === 'read') {
-      var i = 0;
+  getReadContent() {
+    var i = 0;
       while(i < this.state.contents.length) {
         var contents = this.state.contents[i];
         if(contents.id === this.state.selectedContentId) {
-          _title = contents.title;
-          _desc = contents.desc;
+          return contents;
           break;
         }
         i = i + 1;
-      }
-      _article = <ReadContent title={_title} desc={_desc}></ReadContent>
-    } else if( this.state.mode === 'create') {
+    }
+  }
+
+  getContent() {
+    var _title, _desc, _article = null;
+
+    if(this.state.mode === 'welcome') {
+
+      _title = this.state.welcome.title;
+      _desc = this.state.welcome.desc;
+
+    } else if (this.state.mode === 'read') {
+      var _contents = this.getReadContent();
+      _article = <ReadContent title={_contents.title} desc={_contents.desc}></ReadContent>
+
+    } else if ( this.state.mode === 'create') {
       _article = <CreateContent onSubmit={function(_title, _desc) {
-        // add content to this.state.contents
         this.maxContentId = this.maxContentId + 1;
 
-        // this.state.contents.push({
-        //   id : this.maxContentId, title : _title, desc : _desc
-        // });
-
-        // var _content = this.state.contents.concat({
-        //   id : this.maxContentId, title : _title, desc : _desc
-        // })
-
-        var newContents = Array.from(this.state.contents);
-        // newContents !== this.state.contents
-        newContents.push({
+        var _content = this.state.contents.concat({
           id : this.maxContentId, title : _title, desc : _desc
         })
 
         this.setState({
-          contents : newContents
+          contents : _content
         })
       }.bind(this)}></CreateContent>
+
+    } else if ( this.state.mode === 'update') {
+      var _contents = this.getReadContent();
+      _article = <UpdateContent data={_contents} onSubmit={function(_title, _desc) {
+        this.maxContentId = this.maxContentId + 1;
+
+        var _content = this.state.contents.concat({
+          id : this.maxContentId, title : _title, desc : _desc
+        })
+
+        this.setState({
+          contents : _content
+        })
+      }.bind(this)}></UpdateContent>
     }
+    return _article;
+  }
+
+  render() {
     return (
       <div className="App">
         <Subject
@@ -92,7 +107,7 @@ class App extends Component {
             });
           }.bind(this)}>
         </Control>
-        {_article}
+        {this.getContent()}
         
       </div>
     );
@@ -204,4 +219,9 @@ newContents.push({
 var a = {name : "dave"};
 var b = Object.assign({}, a);
 하지만 a !== b 이다.
+
+update는 read와 create가 결합된 기능이다. 
+상위 컴포넌트인 App에서 getReadContent()를 통해 state.contents[i].id === selectedContentId의 return된 배열을 data라는 prop을 통해 하위 컴포넌트인 UpdateContent에 삽입했다. 그 다음 input의 value속성에 삽입된 데이터의 title를 넣고 출력은 가능하지만 수정이 불가능하다. 왜냐하면 수정이 가능하다는 것은 write이 가능하다는 말인데 props는 read-only이다. 따라서 이러한 형태(value={this.props.data.title})로 값을 주면 안된다. 방법은 value에 넣고 있는 props를 state화 시켜주는 것이다. 상위 컴포넌트(App)에서 state를 생성자를 만들고 state값을 주는 방법과 같이 하위 컴포넌트에도 충분히 같은방법으로 state를 만들 수 있다. 그리고 꼭 잊으면 안되는 것은 props를 변수처럼 줄 수 있는 방법은 state를 거쳐야 한다는 것이다. value={this.state.title} 이런식으로 value값을 줄 수 있을 것이다. 하지만 이렇게 한다고 해서 적용되지는 않는다. 왜냐하면 지금까지는 환경을 만들어 준 것이고 이제 직접 state의 값을 바꿔주는 작업을 해야한다. 
+
+
 */
