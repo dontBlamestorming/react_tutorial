@@ -110,9 +110,28 @@ class App extends Component {
 
         <Control
           onChangeMode={function(_mode) {
-            this.setState({
+            if(_mode === 'delete') {
+              if(window.confirm('delete?')) {
+                var _contents = Array.from(this.state.contents);
+                var i = 0;
+                while(i < _contents.length) {
+                  if(_contents[i].id === this.state.selectedContentId) {
+                    _contents.splice(i, 1);
+                    break;
+                  }
+                  i = i + 1;
+                }
+                this.setState({
+                  mode : 'welcome',
+                  contents : _contents
+                });
+                alert('deleted!')
+              }
+            } else {
+              this.setState({
               mode : _mode
             });
+            }
           }.bind(this)}>
         </Control>
         {this.getContent()}
@@ -233,4 +252,21 @@ update는 read와 create가 결합된 기능이다.
 
 update를 하려면 어디에다가 update를 할 것인지에 대한 식별자가 필요하다. 보통 id와 같은 값은 존재하지만 사용자에게 굳이 보일필요가 없기 때문에 hidden form을 사용한다. 
 
+immutable은 구현을 단순하게 하여 더 복잡한 것을 가능하게 한다. 객체를 immutable하게 다루기 위한 여러 라이브러리가 있는데 대표적인 것은 'immutable-js'이다. 배열, 객체의 대체제로 사용할 수 있다. 모든 연산이 원본을 변경하지 않고 복제된 원본을 변경한 결과를 리턴한다. react와 단짝이다.
+
+router
+우리의 App은 하나의 url로 모든 페이지를 다루고 있다. 네트워크 로딩을 하지 않는 것은 장점이지만, url로 페이지를 올 수 없다는 점은 단점이다. 'react router'라는 도구가 있다. url을 따라서 적당한 컴포넌트가 실행되게 할 수 있다. 
+
+create-react-app
+우리는 이것을 사용하고 있지만 독선적이다. 제작자가 정해준 도구만 사용해야 한다. 하지만 더 복잡한 작업을 진행하려면 기본도구는 부족하다. create-react-app의 eject(npm run eject)을 실행하면 감춰진 여러 설정을 수정할 수 있다. 개발환경을 마음대로 수정할 수 있지만 한번 eject하면 돌아갈 수 없다.
+
+redux
+react의 컴포넌트들이 많아지면 컴포넌트간의 교류가 매우 까다롭다. 부모가 자식으로 data를 보낼 때는 props를 통해야하고, 자식으로부터 부모에게 data를 보내려면 이벤트를 버블링시켜야 한다. redux는 중앙에 데이터 저장소를 하나 만들고 모든 컴포넌트는 저장소와 직접 연결된다. 저장소의 데이터가 변경되면 관련된 모든 컴포넌트가 변경된다. 순수하게 react만으로 컴포넌트를 만드는 것은 상위 컴포넌트는 왕이고 하위 컴포넌트는 노비다. 왕의 명령이 노비에게 전달되기까지는 엄청난 단계를 거쳐야 한다. 반면에 react위에 redux라는 플러그인을 설치하여 사용하면 마치 왕과 신하가 단톡방에서 직접 대화하는 것과 같다. 
+
+react server-side rendering
+server쪽에서 웹페이지를 완성한 후에 client로 완성된 html을 전송하는 것으로 app구동을 할 수 있다. 초기 구동시간을 단축할 수 있고, js app 특유의 로딩이 필요없는 특징은 유지할 수 있다. 그러면서도 검색엔진이 html를 직접 읽을 수 있도록 할 수 있기 때문에 접근성이 높아진다. 
+ 
+react-native
+react와 같은 방법으로 native앱을 만들 수 있다. native app이란 ios, android와 같은 플랫폼을 의미한다. 하나의 코드로 모든 플랫폼에서 동작하는 app을 만들 수 있다.
+ 
 */
